@@ -4,11 +4,8 @@
 
 #include "../include/q8_8.h"
 
-#include <complex>
-
-#define SIGN_MASK (1 << 15)
-#define INTEGER_MASK  (0x007F << 8)
-#define FRACTION_MASK (0x00FF)
+#include <algorithm>
+#include <cmath>
 
 // Default constructor
 q8_8::q8_8() {
@@ -20,24 +17,42 @@ q8_8::q8_8(const int16_t v) {
 }
 
 float q8_8::toFloat() const {
-    const int16_t& v = this -> value;
-    const float integer = ((INTEGER_MASK & v) >> 8);
-    const uint16_t fraction = ((FRACTION_MASK & v));
-    const uint16_t sign = ((SIGN_MASK & v)) >> 15;
-
-    uint16_t mask = 0x80;
-    float fraction_sum = 0.0;
-    for (int i = 8; i > 0; i--) {
-        if (mask & fraction) {
-            fraction_sum += static_cast<float_t> (mask) / 256.0f;
-        }
-        mask >>= 1;
-    }
-
-    float result = integer + fraction_sum;
-    result = sign ? -result : result;
-    return result;
+    return this->value / 256.0f;
 }
+
+q8_8 q8_8::operator+(const q8_8& other) const {
+    int32_t wide = this->value + other.value;
+    wide = std::clamp(wide, -32768, 32767);
+
+    return q8_8(static_cast<int16_t>(wide));
+}
+
+q8_8 q8_8::operator-(const q8_8& other) const {
+    int32_t wide = this->value - other.value;
+    wide = std::clamp(wide, -32768, 32767);
+
+    return q8_8(static_cast<int16_t>(wide));
+}
+
+q8_8 q8_8::operator*(const q8_8& other) const {
+    int32_t wide = this->value * other.value;
+    wide = std::clamp(wide, -32768, 32767);
+    return q8_8(static_cast<int16_t>(wide));
+}
+
+q8_8 q8_8::operator/(const q8_8& other) const {
+    int32_t wide = this->value / other.value;
+    wide= std::clamp(wide, -32768, 32767);
+    return q8_8(static_cast<int16_t>(wide));
+}
+
+q8_8 q8_8::q8_8_fromFloat(float f) {
+    auto wide = static_cast<int32_t>(f * 256.0f);
+    wide = std::lround(wide);
+    wide = std::clamp(wide, -32768, 32767);
+    return q8_8(static_cast<int16_t>(wide));
+}
+
 
 
 
