@@ -1,4 +1,4 @@
-# cpp-lab
+# cpp-engineering
 
 This repository contains my C++ learning, embedded systems practice, DSP experiments, and low-level engineering exercises.
 
