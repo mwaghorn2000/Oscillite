@@ -5,6 +5,7 @@
 #include "../include/q8_8.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 
 // Default constructor
@@ -12,8 +13,10 @@ q8_8::q8_8() {
     this->value = 0;
 }
 
-q8_8::q8_8(const int16_t v) {
-    this->value = v;
+q8_8::q8_8(int integer) {
+    int32_t wide = static_cast<int32_t>(integer) << 8;
+    wide = std::clamp(wide, -32768, 32767);
+    this->value = static_cast<int16_t>(wide);
 }
 
 float q8_8::toFloat() const {
@@ -21,34 +24,39 @@ float q8_8::toFloat() const {
 }
 
 q8_8 q8_8::operator+(const q8_8& other) const {
-    int32_t wide = this->value + other.value;
+    int32_t wide = static_cast<int32_t>(this->value) + static_cast<int32_t>(other.value);
     wide = std::clamp(wide, -32768, 32767);
 
     return q8_8(static_cast<int16_t>(wide));
 }
 
 q8_8 q8_8::operator-(const q8_8& other) const {
-    int32_t wide = this->value - other.value;
+    int32_t wide = static_cast<int32_t>(this->value) - static_cast<int32_t>(other.value);
     wide = std::clamp(wide, -32768, 32767);
 
     return q8_8(static_cast<int16_t>(wide));
 }
 
 q8_8 q8_8::operator*(const q8_8& other) const {
-    int32_t wide = this->value * other.value;
+    int32_t wide = (static_cast<int32_t>(this->value) * static_cast<int32_t>(other.value)) >> 8;
     wide = std::clamp(wide, -32768, 32767);
     return q8_8(static_cast<int16_t>(wide));
 }
 
 q8_8 q8_8::operator/(const q8_8& other) const {
-    int32_t wide = this->value / other.value;
+    if (other.toFloat() == 0.0) {
+        return q8_8(0);
+    }
+    const auto a = static_cast<int32_t>(this->value);
+    const auto b = static_cast<int32_t>(other.value);
+    int32_t wide = (a << 8) / b;
     wide= std::clamp(wide, -32768, 32767);
     return q8_8(static_cast<int16_t>(wide));
 }
 
 q8_8 q8_8::q8_8_fromFloat(float f) {
-    auto wide = static_cast<int32_t>(f * 256.0f);
-    wide = std::lround(wide);
+    float scaled = f * 256.0f;
+    auto wide = static_cast<int32_t>(std::lround(scaled));
     wide = std::clamp(wide, -32768, 32767);
     return q8_8(static_cast<int16_t>(wide));
 }

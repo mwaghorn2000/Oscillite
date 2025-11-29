@@ -13,7 +13,7 @@ private:
 
 public:
     q8_8();
-    explicit q8_8(int16_t v);
+    explicit q8_8(int integer);
     static q8_8 q8_8_fromFloat(float f);
 
     [[nodiscard]] float toFloat() const;
