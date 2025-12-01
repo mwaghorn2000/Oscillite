@@ -8,5 +8,8 @@ add_executable(cpp_engineering src/main.cpp
         src/q8_8.cpp
         include/q8_8.h
         src/oscillator.cpp
-        include/oscillator.h)
+        include/oscillator.h
+        src/ADSR.cpp
+        include/ADSR.h
+)
 target_include_directories(cpp_engineering PRIVATE include)
