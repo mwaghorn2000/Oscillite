@@ -18,7 +18,7 @@ public:
     static q8_8 q8_8_FromInt(int integer);
     static q8_8 q8_8_fromFloat(float f);
 
-    [[nodiscard]] float toFloat() const;
+    float toFloat() const;
     q8_8 operator+(const q8_8 & other) const;
     q8_8 operator-(const q8_8 & other) const;
     q8_8 operator*(const q8_8 & other) const;
@@ -28,7 +28,7 @@ public:
     q8_8& operator*=(const q8_8 & other);
     q8_8& operator/=(const q8_8 & other);
 
-    [[nodiscard]] int16_t raw() const { return value; }
+    int16_t raw() const { return value; }
 };
 
 
